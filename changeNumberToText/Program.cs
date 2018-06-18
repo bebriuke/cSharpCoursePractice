@@ -1,92 +1,116 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-class Program
+namespace skaičius_i_zodį
 {
-
-    static void Main()
+    class Program
     {
-        // TODO : keiskite FROM..TO skaicius pagal tai kiek spesite padaryt uzduociu. (-19...19, -99..99, ir tt.)
-        // min skaicius 
-        const int FROM_NUMBER = -9;
-        // max skaicius 
-        const int TO_NUMBER = 9;
-
-        string inputString = "";
-        int inputNumber = 0;
-
-        Console.Write("Sveiki!");
-        while (inputString != " ")
+        static void Main(string[] args)
         {
-            Console.Write("\n(Enter SPACE to exit.)\nIveskite skaiciu:");
-            inputString = Console.ReadLine();
-            if (checkIfGoodNumber(inputString))
+
+            int skaitmenu_skaicius;
+            int x;
+
+            Console.WriteLine("Įvesk skaičių: ");
+            string sk = Console.ReadLine();
+            Console.WriteLine(ArSkaicius(sk));
+
+            Tikrink(sk, out skaitmenu_skaicius, out x);
+            Console.WriteLine(skaitmenu_skaicius + " skaitmenų yra skaičiuje " + x);
+
+            Console.WriteLine(ChangeOnesToText(x, skaitmenu_skaicius));
+
+
+            Console.ReadKey();
+        }
+
+        static bool ArSkaicius(string x)
+        {
+            foreach (char c in x)
+                if (c < '0' || c > '9')
+                    return false;
+            return true;
+        }
+
+        static void Tikrink(string a, out int skaitmenu_skicius, out int x)
+        {
+            x = Convert.ToInt32(a);
+            int laik = x;
+            skaitmenu_skicius = 0;
+            while(laik > 0)
             {
-                Console.WriteLine("Skaicius teisingas!");
-                inputNumber = Convert.ToInt32(inputString);
-                if (checkIfNumberInRange(FROM_NUMBER, TO_NUMBER, inputNumber))
-                {
-                    Console.WriteLine("Skaicius {0} zodziais: {1}", inputNumber, changeNumberToText(inputNumber));
-                }
-                else
-                {
-                    Console.WriteLine("Blogas skaicius {0}, prasau ivesti skaiciu reziuose: {1}..{2}", inputString, FROM_NUMBER, TO_NUMBER);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Ivesti duomenys:{0} nera skaicius!", inputString);
+                laik /= 10;
+                skaitmenu_skicius++;
             }
         }
 
-        Console.WriteLine("\nAciu uz demesi, viso gero.");
-        Console.ReadKey();
+
+
+        static string ChangeOnesToText(int x, int d)
+        {
+            string rez = "";
+            string tuscia = "";
+            string[] vienetai = new[] { "nulis", "vienas", "du", "trys", "keturi", "penki", "sesi", "septyni", "astuoni", "devyni" };
+            string[] dvidesimt = new[] { "desimt", "vienualika", "dvylika", "trylika", "keturiolika", "penkiolika", "sesiolika", "septyniolika", "astuoniolika", "devyniolika" };
+            string[] desimtys = new[] { "dvidesimt", "trisdesimt", "keturiasdesimt", "penkiasdesimt", "sesiasdesimt", "septyniasdesimt", "astuoniasdesimt", "devyniasdesimt" };
+            string[] vienas = new[] { "simtas", "tukstantis", "milijonas", "milijardas" };
+            string[] du = new[] { "simtai", "tukstanciai", "milijonai", "milijardai" };
+            string[] kiek = new[] { "simtu", "tukstanciu", "milijonu", "milijardu" };
+
+            switch (d)
+            {
+                case 1:
+                    rez = rez + vienetai[x];
+                    break;
+                case 2:
+                    if (x < 20) rez = rez + dvidesimt[x%10]; 
+                    else
+                    {
+                        rez = rez + desimtys[x / 10 - 2] +  ((x % 10 != 0) ? " " + ChangeOnesToText(x % 10, d - 1) : "") ;
+                    }
+                    break;
+                case 3:
+                    rez = rez + ChangeOnesToText(x / 100, 1)+ " " + ((x / 100 == 1) ? vienas[0] : du[0]) +" " + ChangeOnesToText(x % 100, d - 1);
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    Console.WriteLine(x / 1000 + " " + (d - 3));
+                    rez = rez + ChangeOnesToText(x/1000, d-3)+" "+ parink(x, 1) + " " + ChangeOnesToText(x % 1000, 3); 
+                    break;
+                case 7:
+                case 8:
+                case 9:
+                    Console.WriteLine(x / 1000000 + " " + (d - 6));
+                    rez = rez + ChangeOnesToText(x / 1000000, d - 6) + " " + parink(x, 2) + " " + ChangeOnesToText(x % 1000000, 6);
+                    break;
+                default:
+                    Console.WriteLine(x / 1000000000 + " " + (d - 9));
+                    rez = rez + ChangeOnesToText(x / 1000000000, d - 9) + " " + parink(x, 3) + " " + ChangeOnesToText(x % 1000000000, 9);
+                    break;
+            }
+            return rez;
+        }
+
+        static string parink(int x, int index)
+        {
+            string[] vienas = new[] { "simtas", "tukstantis", "milijonas", "milijardas" };
+            string[] du = new[] { "simtai", "tukstanciai", "milijonai", "milijardai" };
+            string[] kiek = new[] { "simtu", "tukstanciu", "milijonu", "milijardu" };
+
+            int sk = x / 1000;
+            if (index == 1) sk = x / 1000;
+            if (index == 2) sk = x / 1000000;
+            if (index == 3) sk = x / 1000000000;
+
+            if (sk == 1) return vienas[index];
+            else if ((sk > 20) && (sk % 10 == 1)) return vienas[index];
+            else if (((sk > 9) && (sk  < 21))||(sk%10 == 0)) return kiek[index];
+                 else return du[index];
+
+        }
     }
-
-    // bendra funkcija apjungti visom funkcijom kurias jus sukursit.
-    static string changeNumberToText(int number)
-    {
-        // TODO : pakeiskite sita funkcija pagal savo poreiki. (tiek kiek skaiciu spesite apdorot.)
-        return changeOnesToText(number);
-    }
-
-    // funkcija gauna string skaiciu, patikrina ar skaicius teisingu formatu. Pvz: "123", "-123" grazina true. "12a3", "1-23" grazina false.
-    static bool checkIfGoodNumber(string dataToCheck)
-    {
-        throw new NotImplementedException("TODO: grazinkite true, jei tekstas yra teisingas skaicius.");
-    }
-
-    // funkcija gauna true jei skaicius checkNumber yar tarp fromNumber ir toNumber (imtinai)
-    private static bool checkIfNumberInRange(int fromNumber, int toNumber, int checkNumber)
-    {
-        throw new NotImplementedException("TODO: Patikrinkite ar checkNumber yar tarp skaiciu fromNumber,  toNumber");
-    }
-
-    // funkcija gauna int skaiciu, pakeicia ji i string teksta kuri zodziais nusako skaiciu. PVZ: -1684542 turi grazint - "minus vienas milijonas sesi simtai astuoniasdesimt keturi tukstanciai penki simtai keturiasdiasimt du"
-    static string changeOnesToText(int number)
-    {
-        throw new NotImplementedException("TODO: grazinkite skaiciu -9...9 zodziais.");
-    }
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -19...19 zodziais - changeTeensToText
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -99...99 zodziais - changeTensToText
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -999...999 zodziais - changeHundredsToText
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -9999...9999 zodziais - changeThousandsToText
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -9999999...9999999 zodziais - changeMillionsToText
-
-    // TODO : sukurti funkcija kuri grazina skaiciu -9999999999...9999999999 zodziais - changeBilllionsToText
-
-
-
-    //Skaiciai zodziais:  
-    // "minus"; 
-    // "nulis", "vienas", "du", "trys", "keturi", "penki", "sesi", "septyni", "astuoni", "devyni"; 
-    // "desimt", "vienualika", "dvylika", "trylika", "keturiolika", "penkiolika", "sesiolika", "septyniolika", "astuoniolika", "devyniolika"; 
-    // "dvidesimt", "trisdesimt", "keturiasdesimt", "penkiasdesimt", "sesiasdesimt", "septyniasdesimt", "astuoniasdesimt", "devyniasdesimt"; 
-    // "simtas", "tukstantis", "milijonas", "milijardas"; 
-    // "simtai", "tukstanciai", "milijonai", "milijardai"; 
-    // "simtu", "tukstanciu", "milijonu", "milijardu"; 
 }
