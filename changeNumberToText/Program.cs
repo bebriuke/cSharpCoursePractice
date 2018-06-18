@@ -14,7 +14,7 @@ namespace skaičius_i_zodį
             int skaitmenu_skaicius;
             int x;
 
-            Console.WriteLine("Įvesk skaičių: ");
+            Console.WriteLine("Įvesk skaičių : ");
             string sk = Console.ReadLine();
             Console.WriteLine(ArSkaicius(sk));
 
