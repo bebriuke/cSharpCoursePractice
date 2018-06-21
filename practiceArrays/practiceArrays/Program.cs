@@ -207,7 +207,7 @@ class Program
             for(int j = 0; j < m; j++)
             {
                 if (array[i, j] != '*') MAS[i, j] = Versk(Vienas(array, i, j, m, n));
-                else MAS[i, j] = '*';
+                else MAS[i, j] = '#';
                // Console.Write(MAS[i, j]+ " ");
             }
             ///Console.WriteLine();
